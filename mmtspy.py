@@ -36,7 +36,7 @@ def get_pic_num(userid):
     pic_num = re.findall(reg, r.text)
     #print(num)
     return pic_num
-def get_pic_url(userid,albumid,pic_num,page):# 每页只有15条数据
+def get_pic_url(userid,albumid,pic_num,page):# 每页只有16条数据
     for i in range(page):
         paGe = i
         if pic_num <= 16:
@@ -65,15 +65,9 @@ def get_pic_url(userid,albumid,pic_num,page):# 每页只有15条数据
                 print(userid, albumid, pic_num)
                 url = json['picList'][x]['picUrl']
                 print(url)
-
-            #print(urls)
-    # return urls
 def down_pic(url,n):
     url_addr= ''.join(url)
     url_list = 'http:' + url_addr
-    # print url_list
-    #urllib.urlretrieve(url_list,'img/' + str(n) +'.jpg')
-    #print '正在下载第{}张图片'.format(n)
     thread_lock.release()
 def main():
     user_id = get_url_list()
@@ -116,39 +110,4 @@ def main():
                 print('picnum:{}'.format(picnum))
                 page = picnum // 16
                 get_pic_url(userId, albumId, picnum,page)
-
-    #         for i in g[userId][album_id]:
-    #             albumId = i
-    #             print('albumid:{}'.format(albumId))
-
-        # for i in range(len(get_album_id(userid_foreach))):
-        #     albumid = get_album_id(userid_foreach)[i]
-            #print(albumid)
-        #print(userid_foreach)
-    #     print 'mm编号：{}'.format(userid)
-    #     albumid_foreach = get_album_id(userid_foreach)[0]
-    #     albumid.append(albumid_foreach)
-    #     picnum_foreach = get_album_id(userid_foreach)[1]
-    #     pic_num.append(picnum_foreach)
-    #
-    # f = []
-    # g = {}
-    # for i in range(len(albumid)):
-    #     a = albumid[i]
-    #     b = pic_num[i]
-    #     c = {}
-    #     for i in range(len(a)):
-    #         c[a[i]] = b[i]
-    #     subkey = [x for x in a]
-    #     e = []
-    #     for i in subkey:
-    #         j = dict([(i, c[i])])
-    #         e.append(j)
-    #     f.append(e)
-    # for i in range(len(userid)):
-    #     g[userid[i]] = f[i]
-    # #print g
-    #print(userid)
-    # print albumid
-    # print pic_num
 main()
