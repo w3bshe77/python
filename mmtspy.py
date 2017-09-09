@@ -7,9 +7,6 @@
 import requests
 import re
 import threading
-from bs4 import BeautifulSoup
-from json import loads
-import random
 
 headers = {'User-agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36 OPR/26.0.1656.60'}
 thread_lock = threading.BoundedSemaphore(value=10)
@@ -18,53 +15,52 @@ url = 'https://mm.taobao.com/tstar/search/tstar_model.do?_input_charset=utf-8'
 def get_url_list():
     r = requests.post(url,headers =  headers)
     text = r.json()
-    #json = loads(r)
     url_dict = text['data']['searchDOList']
     return url_dict
 def get_album_id(userid):
     r = requests.post('https://mm.taobao.com/self/album/open_album_list.htm?_charset=utf-8&user_id%20={}'.format(userid),headers=headers)
-    #print(r.text)
     # https://mm.taobao.com/self/album/open_album_list.htm?_charset=utf-8&user_id%20=176817195
     reg = r'.*?album_id=.*?(\d+)&'
     albumid = re.findall(reg, r.text)[::9]
     return albumid
-    #print(albumid)
 def get_pic_num(userid):
     r = requests.post('https://mm.taobao.com/self/album/open_album_list.htm?_charset=utf-8&user_id%20={}'.format(userid),headers=headers)
     reg = r'span class="mm-pic-number">\((.*?\d+)张'
     pic_num = re.findall(reg, r.text)
-    #print(num)
     return pic_num
-def get_pic_url(userid,albumid,pic_num,page):# 每页只有16条数据
+def get_pic_url(userid,albumid,pic_num,page):    # 每页只有16条数据
     for i in range(page):
         paGe = i
-        if pic_num <= 16:
+        if pic_num < 16:
             for i in range(pic_num):
-                r = requests.get(
-                    'https://mm.taobao.com/album/json/get_album_photo_list.htm?user_id={}&album_id={}&page={}'.format(
-                        userid, albumid, paGe), headers=headers)
+                r = requests.get('https://mm.taobao.com/album/json/get_album_photo_list.htm?user_id={}&album_id={}&page={}'.format(userid, albumid, paGe), headers=headers)
+                json = r.json()
+                url = json['picList'][i]['picUrl']
+                print(url)
+        elif pic_num == 16:
+            for i in range(pic_num):
+                r = requests.get('https://mm.taobao.com/album/json/get_album_photo_list.htm?user_id={}&album_id={}&page={}'.format(userid, albumid, paGe), headers=headers)
                 json = r.json()
                 url = json['picList'][i]['picUrl']
                 print(url)
         elif pic_num > 16:
-            n = 0
             x =  pic_num % 16
             if paGe < page:
                 for i in range(16):
                     r = requests.get('https://mm.taobao.com/album/json/get_album_photo_list.htm?user_id={}&album_id={}&page={}'.format(userid,albumid,paGe),headers=headers)
                     json = r.json()
-                    print(userid,albumid,pic_num)
                     url = json['picList'][i]['picUrl']
                     print(url)
             elif paGe == page:
                 for i in range(x) :
-                    r = requests.get(
-                        'https://mm.taobao.com/album/json/get_album_photo_list.htm?user_id={}&album_id={}&page={}'.format(
-                            userid, albumid, paGe), headers=headers)
+                    r = requests.get('https://mm.taobao.com/album/json/get_album_photo_list.htm?user_id={}&album_id={}&page={}'.format(userid, albumid, paGe), headers=headers)
                     json = r.json()
-                    print(userid, albumid, pic_num)
                     url = json['picList'][x]['picUrl']
                     print(url)
+def down_pic(url,n):
+    url_addr= ''.join(url)
+    url_list = 'http:' + url_addr
+    thread_lock.release()
 
 def main():
     user_id = get_url_list()
@@ -107,8 +103,5 @@ def main():
                 print('picnum:{}'.format(picnum))
                 page = picnum // 16
                 get_pic_url(userId, albumId, picnum,page)
+
 main()
-# def down_pic(url,n):
-#     url_addr= ''.join(url)
-#     url_list = 'http:' + url_addr
-#     thread_lock.release()
