@@ -1,8 +1,7 @@
-#/usr/bin/env python3
 #-*- coding=utf-8 -*-
 # @Time    : 17-9-4 上午10:07
 # @Author  : w3bshe77
-# @Site    : 
+# @Site    :
 # @File    : 8947987123.py
 # @Software: PyCharm Community Edition
 import requests
@@ -51,24 +50,22 @@ def get_pic_url(userid,albumid,pic_num,page):# 每页只有16条数据
             n = 0
             x =  pic_num % 16
             if paGe < page:
-                for i in range(paGe):
+                for i in range(16):
                     r = requests.get('https://mm.taobao.com/album/json/get_album_photo_list.htm?user_id={}&album_id={}&page={}'.format(userid,albumid,paGe),headers=headers)
                     json = r.json()
                     print(userid,albumid,pic_num)
                     url = json['picList'][i]['picUrl']
                     print(url)
-            else :
-                r = requests.get(
-                    'https://mm.taobao.com/album/json/get_album_photo_list.htm?user_id={}&album_id={}&page={}'.format(
-                        userid, albumid, paGe), headers=headers)
-                json = r.json()
-                print(userid, albumid, pic_num)
-                url = json['picList'][x]['picUrl']
-                print(url)
-def down_pic(url,n):
-    url_addr= ''.join(url)
-    url_list = 'http:' + url_addr
-    thread_lock.release()
+            elif paGe == page:
+                for i in range(x) :
+                    r = requests.get(
+                        'https://mm.taobao.com/album/json/get_album_photo_list.htm?user_id={}&album_id={}&page={}'.format(
+                            userid, albumid, paGe), headers=headers)
+                    json = r.json()
+                    print(userid, albumid, pic_num)
+                    url = json['picList'][x]['picUrl']
+                    print(url)
+
 def main():
     user_id = get_url_list()
     userid = []
@@ -111,3 +108,7 @@ def main():
                 page = picnum // 16
                 get_pic_url(userId, albumId, picnum,page)
 main()
+# def down_pic(url,n):
+#     url_addr= ''.join(url)
+#     url_list = 'http:' + url_addr
+#     thread_lock.release()
