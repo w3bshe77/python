@@ -5,6 +5,9 @@
 # @Site    : 
 # @File    : mmtspy.py
 # @Software: PyCharm Community Edition
+'''
+                                            本文件仅用于爬淘女郎
+'''
 import requests
 import re
 import threading
